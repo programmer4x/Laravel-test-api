@@ -20,7 +20,7 @@ class CartResource extends JsonResource
             'status'      => $this->status,
             'total_price' => $this->total_price,
             'product'     => ProductResource::make($this->whenLoaded('product')),
-            'user'        => ProductResource::make($this->whenLoaded('user')),
+            'user'        => UserResource::make($this->whenLoaded('user')),
         ];
     }
 }

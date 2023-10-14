@@ -11,61 +11,72 @@ class ProductService
 {
     public function create($request)
     {
-
         $product = Product::create([
-            'name'        => $request->name,
+            'name' => $request->name,
             'description' => $request->description,
-            'price'       => $request->price,
-            'status'      => $request->status,
-            'score'       => $request->score,
-            'user_id'     => Auth::user()->id,
+            'price' => $request->price,
+            'status' => $request->status,
+            'score' => $request->score,
+            'user_id' => Auth::user()->id,
             'category_id' => $request->category_id,
         ]);
-        $product->load('category', 'media');
+        $product->load('category');
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagePath = $request->title . rand(1,99) . '.' .$image->getClientOriginalExtension() ;
-            $image->storeAs('Image' , $imagePath );
+            foreach ($request->file('image') as $i => $image) {
+                $imagePath = $image->store('images');
 
-            Media::create([
-                'product_id' => $product->id,
-                'title'      => $request->title,
-                'image'      => $imagePath ,
-                'size'       => $request->file('image')->getsize(),
-            ]);
+                Media::create([
+                    'product_id' => $product->id,
+                    'title' => $request->title[$i],
+                    'image' => $imagePath,
+                    'size' => $image->getsize(),
+                ]);
+            }
         }
-
-        return $product ;
+        return $product;
     }
 
     public function update($product, $request)
     {
-        $product->update([
-            'name'        => $request->name,
-            'description' => $request->description,
-            'price'       => $request->price,
-            'status'      => $request->status,
-            'score'       => $request->score,
-            'category_id' => $request->category_id,
-        ]);
+        if ($product && Auth::user()->id == $product->user_id) {
 
-        if ($request->hasfile('image')) {
-            foreach ($product->media as $media) {
-                $media->delete();
-            }
-            $image     = $request->file('image');
-            $imagePath = $image->store('images');
-
-            Media::create([
-                'product_id' => $product->id,
-                'title'      => $request->title,
-                'image'      => $imagePath,
-                'size'       => $request->file('image')->getsize() ,
+            $product->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $request->price,
+                'status' => $request->status,
+                'score' => $request->score,
+                'category_id' => $request->category_id,
             ]);
+
+            if ($request->deletedMedia) {
+                    foreach ($request->deletedMedia as $mediaId) {
+                        $media = Media::find($mediaId);
+                            Storage::delete($media->image);
+                            $media->delete();
+                    }
+            }
+
+            if ($request->file('image')) {
+                foreach ($request->file('image') as $i => $image) {
+                    $imagePath = $image->store('images');
+
+                    Media::create([
+                        'product_id' => $product->id,
+                        'title' => $request->title,
+                        'image' => $imagePath,
+                        'size' => $image->getsize(),
+                    ]);
+                }
+            }
+
+            return $product;
         }
 
-        return $product ;
+        return response([
+            'massage' => 'شما اجازه تغییر در این ارایه را ندارید!'
+        ]);
     }
 
     public function destroy($product)
@@ -81,12 +92,12 @@ class ProductService
             $product->delete();
             return response([
                 'message' => 'محصول حذف شد!',
-                'status'  => 'success'
+                'status' => 'success'
             ]);
         }
         return response([
             'message' => 'محصول مورد نظر وجود ندارد!',
-            'status'  => 'error'
+            'status' => 'error'
         ]);
     }
 }

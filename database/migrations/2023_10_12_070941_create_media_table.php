@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('image')->unique();
             $table->integer('size')->default(0);
+            $table->boolean('is_main');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -2,21 +2,20 @@
 
 namespace App\Services;
 
-use App\Models\Cart;
-use App\Models\Product;
+use App\Repositories\Cart\CartRepository;
 use Illuminate\Support\Facades\Auth;
 
 class CartService
 {
+    public function __construct(CartRepository $CartRepository)
+    {
+        $this->CartRepository = $CartRepository;
+    }
+
     public function create($request)
     {
-        $cart = Cart::create([
-            'product_id'  => $request->product_id,
-            'user_id'     => Auth::user()->id,
-            'number'      => $request->number,
-            'total_price' => Product::find($request->product_id)->price,
-            'status'      => $request->status,
-        ])->load('product');
+        $cart = $this->CartRepository->create($request)
+                ->load('product');
         $cart->load('user');
 
         return $cart;

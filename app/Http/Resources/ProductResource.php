@@ -22,8 +22,8 @@ class ProductResource extends JsonResource
                 'price'       => $this->price,
                 'status'      => $this->status,
                 'score'       => $this->score,
-                'category'    => ProductResource::make($this->whenLoaded('category')),
-                'media'       => ProductResource::collection($this->whenLoaded('media')),
+                'category'    => CategoryResource::make($this->whenLoaded('category')),
+                'media'       => MediaResource::collection($this->whenLoaded('media')),
                 'cart'        => ProductResource::collection($this->whenLoaded('cart'))
             ];
         }

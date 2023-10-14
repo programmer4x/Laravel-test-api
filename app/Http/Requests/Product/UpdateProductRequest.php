@@ -27,8 +27,8 @@ class UpdateProductRequest extends FormRequest
             'price'       => 'required|integer',
             'status'      => 'required|string',
             'score'       => 'required|integer|min:1',
-            'image'       => 'image',
-            'title'       => 'string' ,
+            'image.*'       => 'image',
+            'title.*'       => 'string' ,
             'category_id' => 'required|integer'
         ];
     }
