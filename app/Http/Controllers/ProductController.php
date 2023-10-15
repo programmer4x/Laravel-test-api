@@ -6,6 +6,7 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Repositories\Product\ProductRepositoryInterface;
 use App\Services\ProductService;
 use Illuminate\Routing\Controller;
 
@@ -13,15 +14,17 @@ class ProductController extends Controller
 {
 
     protected object $productService;
+    protected object $productRepository;
 
-    public function __construct(productService $productService)
+    public function __construct(ProductService $productService, ProductRepositoryInterface $productRepository)
     {
         $this->productService    = $productService;
+        $this->productRepository = $productRepository;
     }
 
     public function index()
     {
-        $product = Product::with('category' , 'media')->get();
+        $product = $this->productRepository->getAllProduct();
         return ProductResource::collection($product);
     }
 

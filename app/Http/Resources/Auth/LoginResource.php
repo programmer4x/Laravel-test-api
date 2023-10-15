@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class LoginResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'email'     => $this->email,
             'api_token' => $this->api_token,
             'admin'     => $this->is_Admin,
-            'active'    => $this->is_Active, ];
+            'active'    => $this->is_Active,
+        ];
     }
 }

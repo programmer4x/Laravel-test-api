@@ -2,16 +2,24 @@
 
 namespace App\Services\Auth;
 
-use App\Models\User;
+use App\Repositories\Auth\Login\LoginRepository;
+use App\Repositories\Auth\Login\LoginRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
 class LoginService
 {
+    private object $loginRepository;
+
+    public function __construct()
+    {
+        $this->loginRepository = app()->make(LoginRepositoryInterface::class);
+    }
+
     public function login($request)
     {
         $token = Auth::attempt($request->only('email','password'));
-        $user  = User::where('email',$request->email);
-        $user->update(['api_token' => $token]);
+        $user  = $this->loginRepository->existUser($request);
+        $this->loginRepository->updateToken($user,$token);
 
         if (!$token) {
             return response([

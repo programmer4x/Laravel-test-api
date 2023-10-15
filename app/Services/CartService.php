@@ -3,36 +3,27 @@
 namespace App\Services;
 
 use App\Repositories\Cart\CartRepository;
+use App\Repositories\Cart\CartRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
 class CartService
 {
-    public function __construct(CartRepository $CartRepository)
+    private object $CartRepository;
+    public function __construct()
     {
-        $this->CartRepository = $CartRepository;
+        $this->CartRepository = app()->make(CartRepositoryInterface::class);
     }
 
     public function create($request)
     {
-        $cart = $this->CartRepository->create($request)
-                ->load('product');
-        $cart->load('user');
-
-        return $cart;
+        return $this->CartRepository->createCart($request);
     }
 
     public function update($cart, $request)
     {
         if (Auth::user()->id == $cart->user_id){
-            $cart->update([
-                'number'     => $request->number,
-                'status'     => $request->status,
-                'product_id' => $request->product_id,
-            ]);
-            $data = $cart->load('product');
-            return $data;
+            return $this->CartRepository->updateCart($cart , $request);
         }
-
         return response([
             'massage' => 'شما نمیتونید این سبد خرید را بروزرسانی کنید!',
             'status'  => 'error',
@@ -43,7 +34,7 @@ class CartService
     public function destroy($cart)
     {
         if (Auth::user()->id == $cart->user_id){
-            $cart->delete();
+            $this->CartRepository->deletedCart($cart);
             return response([
                 'message' => 'سبد خرید حذف شد!',
                 'status'  => 'success'

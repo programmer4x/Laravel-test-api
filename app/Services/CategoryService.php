@@ -2,32 +2,30 @@
 
 namespace App\Services;
 
-use App\Http\Requests\Category\CategoryRequest;
-use App\Models\Category;
+use App\Repositories\Category\CategoryRepository;
+use App\Repositories\Category\CategoryRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 
 class CategoryService
 {
+
+    private object $categoryRepository;
+
+    public function __construct()
+    {
+        $this->categoryRepository = app()->make(CategoryRepositoryInterface::class);
+    }
+
     public function create($request)
     {
-        return Category::create([
-            'name'      => $request->name,
-            'user_id'   => Auth::user()->id,
-            'parent_id' => $request->parent_id,
-        ])->load('parent');
+        return $this->categoryRepository->createCategory();
     }
 
     public function update($category,$request)
     {
         if (Auth::user()->id == $category->user_id){
-            $category->update([
-                'name'      => $request->name,
-                'user_id'   => Auth::user()->id,
-                'parent_id' => $request->parent_id,
-            ]);
-        return $category;
+        return $this->categoryRepository->updateCategory($category,$request);
         }
-
         return response([
             'massage' => 'شما نمیتونید این دسته بندی را بروزرسانی کنید!',
             'status'  => 'error',
@@ -38,7 +36,7 @@ class CategoryService
     {
         if (Auth::user()->id == $category->user_id) {
         if ($category->children->isEmpty() && $category->products->isEmpty()) {
-            $category->delete();
+            $this->categoryRepository->deleteCategory();
             return response([
                 'massage' => 'دسته بندی با موفقیت پاک شد',
                 'status'  => 'success' ]);

@@ -3,35 +3,30 @@
 namespace App\Services;
 
 use App\Models\Media;
-use App\Models\Product;
+use App\Repositories\Media\MediaRepositoryInterface;
+use App\Repositories\Product\ProductRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ProductService
 {
+    protected object $productRepository;
+    protected object $mediaRepository;
+
+    public function __construct()
+    {
+        $this->productRepository = app()->make(ProductRepositoryInterface::class);
+        $this->productRepository = app()->make(MediaRepositoryInterface::class);
+    }
+
     public function create($request)
     {
-        $product = Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'status' => $request->status,
-            'score' => $request->score,
-            'user_id' => Auth::user()->id,
-            'category_id' => $request->category_id,
-        ]);
-        $product->load('category');
+        $product = $this->productRepository->createProduct($request);
 
         if ($request->hasFile('image')) {
             foreach ($request->file('image') as $i => $image) {
                 $imagePath = $image->store('images');
-
-                Media::create([
-                    'product_id' => $product->id,
-                    'title' => $request->title[$i],
-                    'image' => $imagePath,
-                    'size' => $image->getsize(),
-                ]);
+                $this->mediaRepository->createMedia($request,$product,$image,$imagePath);
             }
         }
         return $product;
@@ -40,34 +35,20 @@ class ProductService
     public function update($product, $request)
     {
         if ($product && Auth::user()->id == $product->user_id) {
-
-            $product->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                'price' => $request->price,
-                'status' => $request->status,
-                'score' => $request->score,
-                'category_id' => $request->category_id,
-            ]);
+            $product = $this->productRepository->updateProduct($product, $request);
 
             if ($request->deletedMedia) {
                     foreach ($request->deletedMedia as $mediaId) {
-                        $media = Media::find($mediaId);
+                        $media = $this->mediaRepository->getMediaById($mediaId);
                             Storage::delete($media->image);
-                            $media->delete();
+                            $this->mediaRepository->deleteMedia($media);
                     }
             }
 
             if ($request->file('image')) {
                 foreach ($request->file('image') as $i => $image) {
                     $imagePath = $image->store('images');
-
-                    Media::create([
-                        'product_id' => $product->id,
-                        'title' => $request->title,
-                        'image' => $imagePath,
-                        'size' => $image->getsize(),
-                    ]);
+                    $this->mediaRepository->createMedia($request,$product,$image,$imagePath);
                 }
             }
 
@@ -86,10 +67,10 @@ class ProductService
             foreach ($product->media as $media) {
                 //deleted in host//
                 Storage::delete($media->image);
-                $media->delete();
+                $this->mediaRepository->deleteMedia($media);
             }
 
-            $product->delete();
+            $this->productRepository->deleteProduct($product);
             return response([
                 'message' => 'محصول حذف شد!',
                 'status' => 'success'

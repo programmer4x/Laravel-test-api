@@ -2,24 +2,23 @@
 
 namespace App\Services\Auth;
 
-use App\Models\User;
+use App\Repositories\Auth\Register\RegisterRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class RegisterService
 {
+    private object $registerRepository;
+
+    public function __construct()
+    {
+        $this->registerRepository = app()->make(RegisterRepositoryInterface::class);
+    }
+
     public function register($request)
     {
-        $user = User::create([
-            'name'     => $request->name,
-            'username' => $request->username,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $user->api_token = Auth::login($user);
-        $user->save();
-
-        return $user;
+        $user = $this->registerRepository->createUser($request);
+        $token = Auth::login($user);
+        return $token;
+//        return $this->registerRepository->createToken($user,$token);
     }
 }
