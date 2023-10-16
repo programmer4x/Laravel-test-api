@@ -19,8 +19,10 @@ class RegisterRepository implements RegisterRepositoryInterface
 
     public function createToken($user, $token)
     {
-        return $user->update([
+        $user->update([
             'api_token' => $token,
         ]);
+
+        return User::find('email' , "$user->email")->api_token;
     }
 }

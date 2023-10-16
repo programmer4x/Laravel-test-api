@@ -18,7 +18,6 @@ class RegisterService
     {
         $user = $this->registerRepository->createUser($request);
         $token = Auth::login($user);
-        return $token;
-//        return $this->registerRepository->createToken($user,$token);
+        return $this->registerRepository->createToken($user,$token);
     }
 }

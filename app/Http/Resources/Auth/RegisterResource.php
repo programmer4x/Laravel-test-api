@@ -16,7 +16,7 @@ class RegisterResource extends JsonResource
     {
             return [
                 'status'    => 'success',
-                'api_token' => $this,
+                'api_token' => $this->api_token,
         ];
     }
 }
