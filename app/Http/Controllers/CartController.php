@@ -41,6 +41,6 @@ class CartController extends Controller
 
     public function destroy(Cart $cart)
     {
-//        return $this->cartService->destroy($cart);
+        return $this->cartService->destroy($cart);
     }
 }
