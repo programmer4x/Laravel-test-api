@@ -25,7 +25,7 @@ Route::middleware('guest')->group(function (){
     Route::post('logout', [LogoutController::class , 'logout']);
 });
 
-Route::middleware('auth')->group(function (){
+Route::middleware('guest')->group(function (){
     Route::apiResource('categories' , CategoryController::class );
     Route::apiResource('products' , ProductController::class );
     Route::apiResource('carts', CartController::class);

@@ -9,7 +9,7 @@ class MediaRepository implements MediaRepositoryInterface
 
     public function createMedia($request,$product,$image,$imagePath)
     {
-        Media::create([
+        return Media::create([
             'product_id' => $product->id,
             'title' => $request->title,
             'image' => $imagePath,
@@ -19,12 +19,12 @@ class MediaRepository implements MediaRepositoryInterface
 
     public function getMediaById($MediaId)
     {
-
+        return Media::find($MediaId);
     }
 
     public function deleteMedia($media)
     {
-        $media->delete();
+        return $media->delete();
     }
 
 }

@@ -16,7 +16,7 @@ class ProductService
     public function __construct()
     {
         $this->productRepository = app()->make(ProductRepositoryInterface::class);
-        $this->productRepository = app()->make(MediaRepositoryInterface::class);
+        $this->mediaRepository = app()->make(MediaRepositoryInterface::class);
     }
 
     public function create($request)

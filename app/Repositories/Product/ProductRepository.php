@@ -22,9 +22,9 @@ class ProductRepository implements ProductRepositoryInterface
             'price' => $request->price,
             'status' => $request->status,
             'score' => $request->score,
-            'user_id' => Auth::user()->id,
+            'user_id' => 1,
             'category_id' => $request->category_id,
-        ])->load('category');
+        ]);
     }
 
     public function updateProduct($product, $request)
