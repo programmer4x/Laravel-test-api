@@ -31,7 +31,7 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $product = $this->productService->create($request);
-        return new ProductResource($product);
+        return ProductResource::make($product);
     }
 
     public function update(Product $product, UpdateProductRequest $request)

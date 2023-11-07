@@ -36,11 +36,11 @@
         </div>
 
         <div class="form-group">
-            <label for="file">Image </label><input type="file" multiple id="image" class="form-control">
+            <label for="file">Image </label><input type="file" multiple name="image" id="image" class="form-control">
         </div>
 
         <div class="form-group">
-            <label for="title">image title :</label> <input type="text" name="tile" id="title" class="form-control">
+            <label for="title">image title :</label> <input type="text" name="title" id="title" class="form-control">
         </div>
 
             <br>
@@ -51,15 +51,21 @@
 
 <script>
     document.querySelector('#send').onclick =  () => {
-        console.log(5)
-            let url = 'localhost:8000/api/products'
+            let url = 'api/products'
+            const fileList = document.getElementById('image').files
+            let fileArray = Object.values(fileList)
+
             let data = {
                 'name' : document.getElementById('name').value ,
                 'description' : document.getElementById('description').value ,
                 'price' : document.getElementById('price').value ,
                 'status' : document.getElementById('status').value ,
-                'category' : document.getElementById('category').value ,
+                'category_id' : document.getElementById('category').value ,
+                'image' : images ,
+                'title' : document.getElementById('title').value ,
             }
+
+            console.log(document.getElementById('image').files);
 
             Store(url, 'POST', data );
     }
@@ -95,15 +101,29 @@
     </table>
 
     {{--update method--}}
-
-
-
-{{--    delete method --}}
-
     <script>
         document.querySelectorAll('.edit').forEach((e) => {
             e.onclick = () => {
-                console.log('clocked');
+                let url = `api/products/${e.id}` ;
+                let data = {
+                'name' : document.getElementById('name').value ,
+                'description' : document.getElementById('description').value ,
+                'price' : document.getElementById('price').value ,
+                'status' : document.getElementById('status').value ,
+                'category_id' : document.getElementById('category').value ,
+            }
+                Store(url , 'PUT', data);
+            }
+        })
+    </script>
+
+    {{--    delete method --}}
+
+    <script>
+        document.querySelectorAll('.delete').forEach((e) => {
+            e.onclick = () => {
+                let url = `api/products/${e.id}` ;
+                Store(url , 'DELETE');
             }
         })
     </script>

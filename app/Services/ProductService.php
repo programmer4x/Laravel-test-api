@@ -23,8 +23,9 @@ class ProductService
     {
         $product = $this->productRepository->createProduct($request);
 
+        dd($request->image);
         if ($request->hasFile('image')) {
-            foreach ($request->file('image') as $i => $image) {
+            foreach ($request->image as $i => $image) {
                 $imagePath = $image->store('images');
                 $this->mediaRepository->createMedia($request,$product,$image,$imagePath);
             }
@@ -62,7 +63,7 @@ class ProductService
 
     public function destroy($product)
     {
-        if ($product && Auth::user()->id == $product->user_id) {
+        if ($product) {
 
             foreach ($product->media as $media) {
                 //deleted in host//
