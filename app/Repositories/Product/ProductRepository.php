@@ -21,7 +21,6 @@ class ProductRepository implements ProductRepositoryInterface
             'description' => $request->description,
             'price' => $request->price,
             'status' => $request->status,
-            'score' => $request->score,
             'user_id' => 1,
             'category_id' => $request->category_id,
         ]);

@@ -15,8 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->text('description');
             $table->bigInteger('price');
-            $table->string('status');
-            $table->integer('score');
+            $table->boolean('status');
             $table->timestamps();
             $table->softDeletes();
         });
